@@ -1,0 +1,252 @@
+// components/modals/ChapterPickerModal.js
+
+import React from "react";
+
+import {
+  Modal,
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+
+import { COLORS } from "../../styles/colors";
+import { SPACING } from "../../styles/spacing";
+import { TYPOGRAPHY } from "../../styles/typography";
+
+export default function ChapterPickerModal({
+  visible,
+
+  title = "Select Chapter",
+
+  chapters = [],
+
+  selectedChapterId = null,
+
+  onSelect,
+
+  onClose,
+}) {
+  const renderItem = ({
+    item,
+  }) => {
+    const selected =
+      item.id ===
+      selectedChapterId;
+
+    return (
+      <TouchableOpacity
+        style={[
+          styles.chapterRow,
+
+          selected &&
+            styles.selectedRow,
+        ]}
+        onPress={() =>
+          onSelect(item)
+        }
+      >
+        <View
+          style={styles.left}
+        >
+          <Text
+            style={
+              styles.chapterName
+            }
+          >
+            {item.name}
+          </Text>
+
+          {!!item.subjectId && (
+            <Text
+              style={
+                styles.subjectText
+              }
+            >
+              {item.subjectId}
+            </Text>
+          )}
+        </View>
+
+        {selected && (
+          <Text
+            style={
+              styles.checkmark
+            }
+          >
+            ✓
+          </Text>
+        )}
+      </TouchableOpacity>
+    );
+  };
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={
+        onClose
+      }
+    >
+      <View style={styles.overlay}>
+        <View
+          style={styles.container}
+        >
+          <View
+            style={styles.header}
+          >
+            <Text
+              style={
+                styles.title
+              }
+            >
+              {title}
+            </Text>
+
+            <TouchableOpacity
+              onPress={onClose}
+            >
+              <Text
+                style={
+                  styles.closeText
+                }
+              >
+                Close
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <FlatList
+            data={chapters}
+            keyExtractor={(
+              item
+            ) => item.id}
+            renderItem={
+              renderItem
+            }
+            showsVerticalScrollIndicator={
+              false
+            }
+            contentContainerStyle={{
+              paddingBottom: 20,
+            }}
+          />
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const styles =
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+
+      backgroundColor:
+        "rgba(0,0,0,0.75)",
+
+      justifyContent:
+        "flex-end",
+    },
+
+    container: {
+      backgroundColor:
+        COLORS.background,
+
+      borderTopLeftRadius: 24,
+
+      borderTopRightRadius: 24,
+
+      padding:
+        SPACING.lg,
+
+      maxHeight: "80%",
+    },
+
+    header: {
+      flexDirection: "row",
+
+      justifyContent:
+        "space-between",
+
+      alignItems: "center",
+
+      marginBottom: 16,
+    },
+
+    title: {
+      color: COLORS.white,
+
+      fontSize:
+        TYPOGRAPHY.h2,
+
+      fontWeight: "700",
+    },
+
+    closeText: {
+      color:
+        COLORS.lightBlue,
+
+      fontSize:
+        TYPOGRAPHY.body,
+    },
+
+    chapterRow: {
+      flexDirection: "row",
+
+      justifyContent:
+        "space-between",
+
+      alignItems: "center",
+
+      backgroundColor:
+        COLORS.cardBackground,
+
+      borderRadius: 14,
+
+      padding: 14,
+
+      marginBottom: 8,
+    },
+
+    selectedRow: {
+      borderWidth: 1,
+
+      borderColor:
+        COLORS.lightBlue,
+    },
+
+    left: {
+      flex: 1,
+    },
+
+    chapterName: {
+      color: COLORS.white,
+
+      fontSize:
+        TYPOGRAPHY.body,
+
+      fontWeight: "600",
+    },
+
+    subjectText: {
+      color:
+        COLORS.secondaryText,
+
+      marginTop: 4,
+
+      fontSize: 12,
+    },
+
+    checkmark: {
+      color:
+        COLORS.lightBlue,
+
+      fontSize: 18,
+
+      fontWeight: "700",
+    },
+  });

@@ -1,0 +1,274 @@
+// components/modals/LinkLectureModal.js
+
+import React, {
+  useState,
+  useEffect,
+} from "react";
+
+import {
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
+
+import { COLORS } from "../../styles/colors";
+import { SPACING } from "../../styles/spacing";
+import { TYPOGRAPHY } from "../../styles/typography";
+
+export default function LinkLectureModal({
+  visible,
+
+  lectures = [],
+
+  linkedLectureIds = [],
+
+  onSave,
+
+  onClose,
+}) {
+  const [
+    selected,
+    setSelected,
+  ] = useState([]);
+
+  useEffect(() => {
+    if (!visible) return;
+
+    setSelected(
+      linkedLectureIds
+    );
+  }, [
+    visible,
+    linkedLectureIds,
+  ]);
+
+  const toggleLecture =
+    (lectureId) => {
+      if (
+        selected.includes(
+          lectureId
+        )
+      ) {
+        setSelected(
+          selected.filter(
+            (id) =>
+              id !== lectureId
+          )
+        );
+      } else {
+        setSelected([
+          ...selected,
+          lectureId,
+        ]);
+      }
+    };
+
+  const handleSave = () => {
+    onSave(selected);
+  };
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+    >
+      <View style={styles.overlay}>
+        <View
+          style={styles.container}
+        >
+          <Text
+            style={styles.title}
+          >
+            Link Lectures
+          </Text>
+
+          <ScrollView>
+            {lectures.map(
+              (lecture) => {
+                const isSelected =
+                  selected.includes(
+                    lecture.id
+                  );
+
+                return (
+                  <TouchableOpacity
+                    key={
+                      lecture.id
+                    }
+                    style={[
+                      styles.lectureRow,
+                      isSelected &&
+                        styles.selectedLecture,
+                    ]}
+                    onPress={() =>
+                      toggleLecture(
+                        lecture.id
+                      )
+                    }
+                  >
+                    <View>
+                      <Text
+                        style={
+                          styles.lectureName
+                        }
+                      >
+                        {
+                          lecture.name
+                        }
+                      </Text>
+
+                      <Text
+                        style={
+                          styles.duration
+                        }
+                      >
+                        {
+                          lecture.duration
+                        }
+                      </Text>
+                    </View>
+
+                    {isSelected && (
+                      <Text
+                        style={
+                          styles.checkmark
+                        }
+                      >
+                        ✓
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                );
+              }
+            )}
+          </ScrollView>
+
+          <View
+            style={styles.footer}
+          >
+            <TouchableOpacity
+              onPress={onClose}
+            >
+              <Text
+                style={
+                  styles.cancelText
+                }
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={
+                styles.saveButton
+              }
+              onPress={handleSave}
+            >
+              <Text
+                style={
+                  styles.saveText
+                }
+              >
+                Save
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const styles =
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor:
+        "rgba(0,0,0,0.8)",
+      justifyContent:
+        "flex-end",
+    },
+
+    container: {
+      backgroundColor:
+        COLORS.background,
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
+      padding: SPACING.lg,
+      maxHeight: "90%",
+    },
+
+    title: {
+      color: COLORS.white,
+      fontSize:
+        TYPOGRAPHY.h2,
+      fontWeight: "700",
+      marginBottom: 16,
+    },
+
+    lectureRow: {
+      backgroundColor:
+        COLORS.cardBackground,
+      borderRadius: 12,
+      padding: 14,
+      marginBottom: 8,
+
+      flexDirection: "row",
+      justifyContent:
+        "space-between",
+      alignItems: "center",
+    },
+
+    selectedLecture: {
+      borderWidth: 1,
+      borderColor:
+        COLORS.lightBlue,
+    },
+
+    lectureName: {
+      color: COLORS.white,
+      fontWeight: "600",
+    },
+
+    duration: {
+      color:
+        COLORS.secondaryText,
+      marginTop: 2,
+    },
+
+    checkmark: {
+      color:
+        COLORS.lightBlue,
+      fontSize: 18,
+      fontWeight: "700",
+    },
+
+    footer: {
+      flexDirection: "row",
+      justifyContent:
+        "space-between",
+      marginTop: 16,
+    },
+
+    cancelText: {
+      color:
+        COLORS.secondaryText,
+    },
+
+    saveButton: {
+      backgroundColor:
+        COLORS.lightBlue,
+      borderRadius: 12,
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+    },
+
+    saveText: {
+      color: COLORS.white,
+      fontWeight: "700",
+    },
+  });

@@ -1,0 +1,346 @@
+// components/modals/CreateTestModal.js
+
+import React, {
+  useState,
+  useEffect,
+} from "react";
+
+import {
+  Modal,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
+
+import { COLORS } from "../../styles/colors";
+import { SPACING } from "../../styles/spacing";
+import { TYPOGRAPHY } from "../../styles/typography";
+
+const TEST_TYPES = [
+  "UT",
+  "RT",
+  "FST11",
+  "FST12",
+  "FSTALL",
+];
+
+export default function CreateTestModal({
+  visible,
+
+  chapters = [],
+
+  onSave,
+
+  onClose,
+}) {
+  const [
+    type,
+    setType,
+  ] = useState("UT");
+
+  const [
+    number,
+    setNumber,
+  ] = useState("");
+
+  const [
+    date,
+    setDate,
+  ] = useState("");
+
+  const [
+    selectedChapters,
+    setSelectedChapters,
+  ] = useState([]);
+
+  useEffect(() => {
+    if (!visible) return;
+
+    setType("UT");
+    setNumber("");
+    setDate("");
+    setSelectedChapters([]);
+  }, [visible]);
+
+  const toggleChapter =
+    (chapterId) => {
+      if (
+        selectedChapters.includes(
+          chapterId
+        )
+      ) {
+        setSelectedChapters(
+          selectedChapters.filter(
+            (id) =>
+              id !== chapterId
+          )
+        );
+      } else {
+        setSelectedChapters([
+          ...selectedChapters,
+          chapterId,
+        ]);
+      }
+    };
+
+  const handleSave = () => {
+    onSave({
+      type,
+      number:
+        Number(number),
+
+      testDate: date,
+
+      syllabus:
+        selectedChapters,
+    });
+  };
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+    >
+      <View style={styles.overlay}>
+        <View style={styles.container}>
+          <Text style={styles.title}>
+            Create Test
+          </Text>
+
+          <Text style={styles.label}>
+            Test Type
+          </Text>
+
+          <View
+            style={styles.rowWrap}
+          >
+            {TEST_TYPES.map(
+              (item) => (
+                <TouchableOpacity
+                  key={item}
+                  style={[
+                    styles.pill,
+                    type === item &&
+                      styles.selectedPill,
+                  ]}
+                  onPress={() =>
+                    setType(item)
+                  }
+                >
+                  <Text
+                    style={
+                      styles.pillText
+                    }
+                  >
+                    {item}
+                  </Text>
+                </TouchableOpacity>
+              )
+            )}
+          </View>
+
+          <TextInput
+            style={styles.input}
+            value={number}
+            onChangeText={
+              setNumber
+            }
+            keyboardType="numeric"
+            placeholder="Test Number"
+            placeholderTextColor={
+              COLORS.secondaryText
+            }
+          />
+
+          <TextInput
+            style={styles.input}
+            value={date}
+            onChangeText={setDate}
+            placeholder="YYYY-MM-DD"
+            placeholderTextColor={
+              COLORS.secondaryText
+            }
+          />
+
+          <Text style={styles.label}>
+            Chapters
+          </Text>
+
+          <ScrollView>
+            {chapters.map(
+              (chapter) => (
+                <TouchableOpacity
+                  key={chapter.id}
+                  style={[
+                    styles.chapterRow,
+                    selectedChapters.includes(
+                      chapter.id
+                    ) &&
+                      styles.selectedChapter,
+                  ]}
+                  onPress={() =>
+                    toggleChapter(
+                      chapter.id
+                    )
+                  }
+                >
+                  <Text
+                    style={
+                      styles.chapterText
+                    }
+                  >
+                    {
+                      chapter.name
+                    }
+                  </Text>
+                </TouchableOpacity>
+              )
+            )}
+          </ScrollView>
+
+          <View style={styles.footer}>
+            <TouchableOpacity
+              onPress={onClose}
+            >
+              <Text
+                style={
+                  styles.cancel
+                }
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={
+                styles.saveButton
+              }
+              onPress={handleSave}
+            >
+              <Text
+                style={
+                  styles.saveText
+                }
+              >
+                Create
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const styles =
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor:
+        "rgba(0,0,0,0.8)",
+      justifyContent:
+        "flex-end",
+    },
+
+    container: {
+      backgroundColor:
+        COLORS.background,
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
+      padding: SPACING.lg,
+      maxHeight: "90%",
+    },
+
+    title: {
+      color: COLORS.white,
+      fontSize:
+        TYPOGRAPHY.h2,
+      fontWeight: "700",
+      marginBottom: 12,
+    },
+
+    label: {
+      color: COLORS.white,
+      marginTop: 12,
+      marginBottom: 8,
+    },
+
+    rowWrap: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+    },
+
+    pill: {
+      backgroundColor:
+        COLORS.cardBackground,
+      borderRadius: 12,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      marginRight: 8,
+      marginBottom: 8,
+    },
+
+    selectedPill: {
+      backgroundColor:
+        COLORS.lightBlue,
+    },
+
+    pillText: {
+      color: COLORS.white,
+    },
+
+    input: {
+      backgroundColor:
+        COLORS.cardBackground,
+      color: COLORS.white,
+      borderRadius: 12,
+      padding: 12,
+      marginTop: 10,
+    },
+
+    chapterRow: {
+      backgroundColor:
+        COLORS.cardBackground,
+      borderRadius: 12,
+      padding: 12,
+      marginBottom: 8,
+    },
+
+    selectedChapter: {
+      backgroundColor:
+        COLORS.lightBlue,
+    },
+
+    chapterText: {
+      color: COLORS.white,
+    },
+
+    footer: {
+      flexDirection: "row",
+      justifyContent:
+        "space-between",
+      marginTop: 20,
+    },
+
+    cancel: {
+      color:
+        COLORS.secondaryText,
+    },
+
+    saveButton: {
+      backgroundColor:
+        COLORS.lightBlue,
+      borderRadius: 12,
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+    },
+
+    saveText: {
+      color: COLORS.white,
+      fontWeight: "700",
+    },
+  });

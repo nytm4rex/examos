@@ -1,0 +1,474 @@
+// components/modals/TestBookmarkModal.js
+
+import React, {
+  useState,
+  useEffect,
+} from "react";
+
+import {
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
+
+import { COLORS } from "../../styles/colors";
+import { SPACING } from "../../styles/spacing";
+import { TYPOGRAPHY } from "../../styles/typography";
+
+const CATEGORIES = [
+  "CE",
+  "CE-U",
+  "SM",
+  "OS",
+  "GQ",
+  "Type-B",
+];
+
+export default function TestBookmarkModal({
+  visible,
+
+  subjects = [],
+
+  chapters = [],
+
+  topics = [],
+
+  questionCount = 45,
+
+  onSave,
+
+  onClose,
+}) {
+  const [
+    selectedSubject,
+    setSelectedSubject,
+  ] = useState(null);
+
+  const [
+    selectedQuestion,
+    setSelectedQuestion,
+  ] = useState(null);
+
+  const [
+    selectedChapter,
+    setSelectedChapter,
+  ] = useState(null);
+
+  const [
+    selectedTopic,
+    setSelectedTopic,
+  ] = useState(null);
+
+  const [
+    selectedCategory,
+    setSelectedCategory,
+  ] = useState(null);
+
+  useEffect(() => {
+    if (!visible) return;
+
+    setSelectedSubject(null);
+    setSelectedQuestion(null);
+    setSelectedChapter(null);
+    setSelectedTopic(null);
+    setSelectedCategory(null);
+  }, [visible]);
+
+  const handleSave = () => {
+    if (
+      !selectedSubject ||
+      !selectedQuestion ||
+      !selectedChapter ||
+      !selectedTopic ||
+      !selectedCategory
+    ) {
+      return;
+    }
+
+    onSave({
+      subjectId:
+        selectedSubject,
+
+      questionNumber:
+        selectedQuestion,
+
+      chapterId:
+        selectedChapter,
+
+      topicId:
+        selectedTopic,
+
+      category:
+        selectedCategory,
+    });
+  };
+
+  const filteredTopics =
+    topics.filter(
+      (topic) =>
+        topic.chapterId ===
+        selectedChapter
+    );
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+    >
+      <View style={styles.overlay}>
+        <View style={styles.container}>
+          <Text style={styles.title}>
+            Add Test Bookmark
+          </Text>
+
+          {/* SUBJECT */}
+
+          <Text style={styles.label}>
+            Subject
+          </Text>
+
+          <View
+            style={styles.rowWrap}
+          >
+            {subjects.map(
+              (subject) => (
+                <TouchableOpacity
+                  key={subject.id}
+                  style={[
+                    styles.pill,
+                    selectedSubject ===
+                      subject.id &&
+                      styles.selectedPill,
+                  ]}
+                  onPress={() =>
+                    setSelectedSubject(
+                      subject.id
+                    )
+                  }
+                >
+                  <Text
+                    style={
+                      styles.pillText
+                    }
+                  >
+                    {
+                      subject.shortName
+                    }
+                  </Text>
+                </TouchableOpacity>
+              )
+            )}
+          </View>
+
+          {/* QUESTION */}
+
+          <Text style={styles.label}>
+            Question
+          </Text>
+
+          <ScrollView
+            contentContainerStyle={
+              styles.grid
+            }
+          >
+            {Array.from(
+              {
+                length:
+                  questionCount,
+              },
+              (_, i) =>
+                i + 1
+            ).map((num) => (
+              <TouchableOpacity
+                key={num}
+                style={[
+                  styles.circle,
+                  selectedQuestion ===
+                    num &&
+                    styles.selectedCircle,
+                ]}
+                onPress={() =>
+                  setSelectedQuestion(
+                    num
+                  )
+                }
+              >
+                <Text
+                  style={
+                    styles.circleText
+                  }
+                >
+                  {num}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+
+          {/* CHAPTER */}
+
+          <Text style={styles.label}>
+            Chapter
+          </Text>
+
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={
+              false
+            }
+          >
+            {chapters.map(
+              (chapter) => (
+                <TouchableOpacity
+                  key={chapter.id}
+                  style={[
+                    styles.pill,
+                    selectedChapter ===
+                      chapter.id &&
+                      styles.selectedPill,
+                  ]}
+                  onPress={() =>
+                    setSelectedChapter(
+                      chapter.id
+                    )
+                  }
+                >
+                  <Text
+                    style={
+                      styles.pillText
+                    }
+                  >
+                    {
+                      chapter.name
+                    }
+                  </Text>
+                </TouchableOpacity>
+              )
+            )}
+          </ScrollView>
+
+          {/* TOPIC */}
+
+          <Text style={styles.label}>
+            Topic
+          </Text>
+
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={
+              false
+            }
+          >
+            {filteredTopics.map(
+              (topic) => (
+                <TouchableOpacity
+                  key={topic.id}
+                  style={[
+                    styles.pill,
+                    selectedTopic ===
+                      topic.id &&
+                      styles.selectedPill,
+                  ]}
+                  onPress={() =>
+                    setSelectedTopic(
+                      topic.id
+                    )
+                  }
+                >
+                  <Text
+                    style={
+                      styles.pillText
+                    }
+                  >
+                    {
+                      topic.name
+                    }
+                  </Text>
+                </TouchableOpacity>
+              )
+            )}
+          </ScrollView>
+
+          {/* CATEGORY */}
+
+          <Text style={styles.label}>
+            Category
+          </Text>
+
+          <View
+            style={styles.rowWrap}
+          >
+            {CATEGORIES.map(
+              (category) => (
+                <TouchableOpacity
+                  key={category}
+                  style={[
+                    styles.pill,
+                    selectedCategory ===
+                      category &&
+                      styles.selectedPill,
+                  ]}
+                  onPress={() =>
+                    setSelectedCategory(
+                      category
+                    )
+                  }
+                >
+                  <Text
+                    style={
+                      styles.pillText
+                    }
+                  >
+                    {category}
+                  </Text>
+                </TouchableOpacity>
+              )
+            )}
+          </View>
+
+          <View style={styles.footer}>
+            <TouchableOpacity
+              onPress={onClose}
+            >
+              <Text
+                style={
+                  styles.cancel
+                }
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={
+                styles.saveButton
+              }
+              onPress={handleSave}
+            >
+              <Text
+                style={
+                  styles.saveText
+                }
+              >
+                Save
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const styles =
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor:
+        "rgba(0,0,0,0.8)",
+      justifyContent:
+        "flex-end",
+    },
+
+    container: {
+      backgroundColor:
+        COLORS.background,
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
+      padding: SPACING.lg,
+      maxHeight: "90%",
+    },
+
+    title: {
+      color: COLORS.white,
+      fontSize:
+        TYPOGRAPHY.h2,
+      fontWeight: "700",
+      marginBottom: 12,
+    },
+
+    label: {
+      color: COLORS.white,
+      marginTop: 14,
+      marginBottom: 8,
+    },
+
+    rowWrap: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+    },
+
+    pill: {
+      backgroundColor:
+        COLORS.cardBackground,
+      borderRadius: 12,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      marginRight: 8,
+      marginBottom: 8,
+    },
+
+    selectedPill: {
+      backgroundColor:
+        COLORS.lightBlue,
+    },
+
+    pillText: {
+      color: COLORS.white,
+    },
+
+    grid: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+    },
+
+    circle: {
+      width: 42,
+      height: 42,
+      borderRadius: 21,
+      backgroundColor:
+        COLORS.cardBackground,
+      justifyContent:
+        "center",
+      alignItems: "center",
+      margin: 4,
+    },
+
+    selectedCircle: {
+      backgroundColor:
+        COLORS.lightBlue,
+    },
+
+    circleText: {
+      color: COLORS.white,
+      fontWeight: "600",
+    },
+
+    footer: {
+      flexDirection: "row",
+      justifyContent:
+        "space-between",
+      marginTop: 20,
+    },
+
+    cancel: {
+      color:
+        COLORS.secondaryText,
+    },
+
+    saveButton: {
+      backgroundColor:
+        COLORS.lightBlue,
+      borderRadius: 12,
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+    },
+
+    saveText: {
+      color: COLORS.white,
+      fontWeight: "700",
+    },
+  });

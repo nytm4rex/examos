@@ -1,0 +1,333 @@
+// components/modals/ScoreEntryModal.js
+
+import React, {
+  useState,
+  useEffect,
+} from "react";
+
+import {
+  Modal,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
+
+import { COLORS } from "../../styles/colors";
+import { SPACING } from "../../styles/spacing";
+import { TYPOGRAPHY } from "../../styles/typography";
+
+const SUBJECTS = [
+  {
+    id: "physics",
+    label: "Physics",
+  },
+  {
+    id: "chemistry",
+    label: "Chemistry",
+  },
+  {
+    id: "biology",
+    label: "Biology",
+  },
+];
+
+export default function ScoreEntryModal({
+  visible,
+  onSave,
+  onClose,
+}) {
+  const [scores, setScores] =
+    useState({});
+
+  useEffect(() => {
+    if (!visible) return;
+
+    const initial = {};
+
+    SUBJECTS.forEach(
+      (subject) => {
+        initial[subject.id] = {
+          correct: "",
+          wrong: "",
+          unattempted: "",
+        };
+      }
+    );
+
+    setScores(initial);
+  }, [visible]);
+
+  const updateField = (
+    subjectId,
+    field,
+    value
+  ) => {
+    setScores((prev) => ({
+      ...prev,
+
+      [subjectId]: {
+        ...prev[subjectId],
+        [field]: value,
+      },
+    }));
+  };
+
+  const handleSave = () => {
+    const formatted = {};
+
+    SUBJECTS.forEach(
+      (subject) => {
+        formatted[subject.id] = {
+          correct:
+            Number(
+              scores[
+                subject.id
+              ]?.correct || 0
+            ),
+
+          wrong:
+            Number(
+              scores[
+                subject.id
+              ]?.wrong || 0
+            ),
+
+          unattempted:
+            Number(
+              scores[
+                subject.id
+              ]?.unattempted ||
+                0
+            ),
+        };
+      }
+    );
+
+    onSave(formatted);
+  };
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+    >
+      <View style={styles.overlay}>
+        <View
+          style={styles.container}
+        >
+          <Text
+            style={styles.title}
+          >
+            Enter Test Score
+          </Text>
+
+          <ScrollView>
+            {SUBJECTS.map(
+              (subject) => (
+                <View
+                  key={subject.id}
+                  style={
+                    styles.subjectBlock
+                  }
+                >
+                  <Text
+                    style={
+                      styles.subjectTitle
+                    }
+                  >
+                    {
+                      subject.label
+                    }
+                  </Text>
+
+                  <TextInput
+                    style={
+                      styles.input
+                    }
+                    value={
+                      scores[
+                        subject.id
+                      ]?.correct
+                    }
+                    keyboardType="numeric"
+                    placeholder="Correct"
+                    placeholderTextColor={
+                      COLORS.secondaryText
+                    }
+                    onChangeText={(
+                      value
+                    ) =>
+                      updateField(
+                        subject.id,
+                        "correct",
+                        value
+                      )
+                    }
+                  />
+
+                  <TextInput
+                    style={
+                      styles.input
+                    }
+                    value={
+                      scores[
+                        subject.id
+                      ]?.wrong
+                    }
+                    keyboardType="numeric"
+                    placeholder="Wrong"
+                    placeholderTextColor={
+                      COLORS.secondaryText
+                    }
+                    onChangeText={(
+                      value
+                    ) =>
+                      updateField(
+                        subject.id,
+                        "wrong",
+                        value
+                      )
+                    }
+                  />
+
+                  <TextInput
+                    style={
+                      styles.input
+                    }
+                    value={
+                      scores[
+                        subject.id
+                      ]
+                        ?.unattempted
+                    }
+                    keyboardType="numeric"
+                    placeholder="Unattempted"
+                    placeholderTextColor={
+                      COLORS.secondaryText
+                    }
+                    onChangeText={(
+                      value
+                    ) =>
+                      updateField(
+                        subject.id,
+                        "unattempted",
+                        value
+                      )
+                    }
+                  />
+                </View>
+              )
+            )}
+          </ScrollView>
+
+          <View
+            style={styles.footer}
+          >
+            <TouchableOpacity
+              onPress={onClose}
+            >
+              <Text
+                style={
+                  styles.cancelText
+                }
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={
+                styles.saveButton
+              }
+              onPress={handleSave}
+            >
+              <Text
+                style={
+                  styles.saveText
+                }
+              >
+                Save
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const styles =
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor:
+        "rgba(0,0,0,0.8)",
+      justifyContent:
+        "flex-end",
+    },
+
+    container: {
+      backgroundColor:
+        COLORS.background,
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
+      padding: SPACING.lg,
+      maxHeight: "90%",
+    },
+
+    title: {
+      color: COLORS.white,
+      fontSize:
+        TYPOGRAPHY.h2,
+      fontWeight: "700",
+      marginBottom: 20,
+    },
+
+    subjectBlock: {
+      marginBottom: 20,
+    },
+
+    subjectTitle: {
+      color: COLORS.white,
+      fontWeight: "700",
+      marginBottom: 10,
+    },
+
+    input: {
+      backgroundColor:
+        COLORS.cardBackground,
+      color: COLORS.white,
+      borderRadius: 12,
+      padding: 12,
+      marginBottom: 8,
+    },
+
+    footer: {
+      flexDirection: "row",
+      justifyContent:
+        "space-between",
+      marginTop: 10,
+    },
+
+    cancelText: {
+      color:
+        COLORS.secondaryText,
+    },
+
+    saveButton: {
+      backgroundColor:
+        COLORS.lightBlue,
+      borderRadius: 12,
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+    },
+
+    saveText: {
+      color: COLORS.white,
+      fontWeight: "700",
+    },
+  });

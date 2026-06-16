@@ -1,0 +1,371 @@
+// components/modals/MCQBookmarkModal.js
+
+import React, {
+  useState,
+  useEffect,
+} from "react";
+
+import {
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
+
+import { COLORS } from "../../styles/colors";
+import { SPACING } from "../../styles/spacing";
+import { TYPOGRAPHY } from "../../styles/typography";
+
+const CATEGORIES = [
+  "CE",
+  "CE-U",
+  "SM",
+  "OS",
+  "GQ",
+  "Type-B",
+];
+
+export default function MCQBookmarkModal({
+  visible,
+
+  totalQuestions = 180,
+
+  onSave,
+
+  onClose,
+}) {
+  const [
+    selectedQuestion,
+    setSelectedQuestion,
+  ] = useState(null);
+
+  const [
+    selectedCategory,
+    setSelectedCategory,
+  ] = useState(null);
+
+  useEffect(() => {
+    if (visible) {
+      setSelectedQuestion(
+        null
+      );
+
+      setSelectedCategory(
+        null
+      );
+    }
+  }, [visible]);
+
+  const handleSave = () => {
+    if (
+      !selectedQuestion ||
+      !selectedCategory
+    ) {
+      return;
+    }
+
+    onSave({
+      questionNumber:
+        selectedQuestion,
+
+      category:
+        selectedCategory,
+    });
+  };
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+    >
+      <View style={styles.overlay}>
+        <View
+          style={styles.container}
+        >
+          <Text
+            style={styles.title}
+          >
+            Add Bookmark
+          </Text>
+
+          <Text
+            style={styles.label}
+          >
+            Question Number
+          </Text>
+
+          <ScrollView
+            horizontal={false}
+            contentContainerStyle={
+              styles.questionGrid
+            }
+          >
+            {Array.from(
+              {
+                length:
+                  totalQuestions,
+              },
+              (_, i) =>
+                i + 1
+            ).map((num) => {
+              const selected =
+                selectedQuestion ===
+                num;
+
+              return (
+                <TouchableOpacity
+                  key={num}
+                  style={[
+                    styles.question,
+                    selected &&
+                      styles.selectedQuestion,
+                  ]}
+                  onPress={() =>
+                    setSelectedQuestion(
+                      num
+                    )
+                  }
+                >
+                  <Text
+                    style={
+                      styles.questionText
+                    }
+                  >
+                    {num}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+
+          <Text
+            style={styles.label}
+          >
+            Category
+          </Text>
+
+          <View
+            style={
+              styles.categoryRow
+            }
+          >
+            {CATEGORIES.map(
+              (
+                category
+              ) => {
+                const selected =
+                  selectedCategory ===
+                  category;
+
+                return (
+                  <TouchableOpacity
+                    key={
+                      category
+                    }
+                    style={[
+                      styles.category,
+                      selected &&
+                        styles.selectedCategory,
+                    ]}
+                    onPress={() =>
+                      setSelectedCategory(
+                        category
+                      )
+                    }
+                  >
+                    <Text
+                      style={
+                        styles.categoryText
+                      }
+                    >
+                      {
+                        category
+                      }
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }
+            )}
+          </View>
+
+          <View
+            style={styles.footer}
+          >
+            <TouchableOpacity
+              onPress={onClose}
+            >
+              <Text
+                style={
+                  styles.cancelText
+                }
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={
+                styles.saveButton
+              }
+              onPress={handleSave}
+            >
+              <Text
+                style={
+                  styles.saveText
+                }
+              >
+                Save
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const styles =
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+
+      backgroundColor:
+        "rgba(0,0,0,0.8)",
+
+      justifyContent:
+        "flex-end",
+    },
+
+    container: {
+      backgroundColor:
+        COLORS.background,
+
+      borderTopLeftRadius: 24,
+
+      borderTopRightRadius: 24,
+
+      padding: SPACING.lg,
+
+      maxHeight: "85%",
+    },
+
+    title: {
+      color: COLORS.white,
+
+      fontSize:
+        TYPOGRAPHY.h2,
+
+      fontWeight: "700",
+
+      marginBottom: 16,
+    },
+
+    label: {
+      color: COLORS.white,
+
+      marginBottom: 10,
+
+      marginTop: 10,
+    },
+
+    questionGrid: {
+      flexDirection: "row",
+
+      flexWrap: "wrap",
+    },
+
+    question: {
+      width: 42,
+
+      height: 42,
+
+      borderRadius: 21,
+
+      backgroundColor:
+        COLORS.cardBackground,
+
+      justifyContent:
+        "center",
+
+      alignItems: "center",
+
+      margin: 4,
+    },
+
+    selectedQuestion: {
+      backgroundColor:
+        COLORS.lightBlue,
+    },
+
+    questionText: {
+      color: COLORS.white,
+
+      fontWeight: "600",
+    },
+
+    categoryRow: {
+      flexDirection: "row",
+
+      flexWrap: "wrap",
+
+      marginTop: 10,
+    },
+
+    category: {
+      backgroundColor:
+        COLORS.cardBackground,
+
+      borderRadius: 12,
+
+      paddingHorizontal: 12,
+
+      paddingVertical: 8,
+
+      marginRight: 8,
+
+      marginBottom: 8,
+    },
+
+    selectedCategory: {
+      backgroundColor:
+        COLORS.lightBlue,
+    },
+
+    categoryText: {
+      color: COLORS.white,
+    },
+
+    footer: {
+      flexDirection: "row",
+
+      justifyContent:
+        "space-between",
+
+      marginTop: 20,
+    },
+
+    cancelText: {
+      color:
+        COLORS.secondaryText,
+    },
+
+    saveButton: {
+      backgroundColor:
+        COLORS.lightBlue,
+
+      borderRadius: 12,
+
+      paddingHorizontal: 18,
+
+      paddingVertical: 10,
+    },
+
+    saveText: {
+      color: COLORS.white,
+
+      fontWeight: "700",
+    },
+  });

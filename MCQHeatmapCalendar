@@ -1,0 +1,47 @@
+// context/HomeContext.js
+
+import React, {
+  createContext,
+  useContext,
+  useState,
+} from "react";
+
+const HomeContext =
+  createContext();
+
+export const useHome =
+  () => useContext(HomeContext);
+
+export const HomeProvider =
+  ({ children }) => {
+    const [
+      activeTab,
+      setActiveTab,
+    ] = useState("revision");
+
+    const [
+      refreshFlag,
+      setRefreshFlag,
+    ] = useState(false);
+
+    const refreshHome =
+      () => {
+        setRefreshFlag(
+          (prev) => !prev
+        );
+      };
+
+    return (
+      <HomeContext.Provider
+        value={{
+          activeTab,
+          setActiveTab,
+
+          refreshFlag,
+          refreshHome,
+        }}
+      >
+        {children}
+      </HomeContext.Provider>
+    );
+  };

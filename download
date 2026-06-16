@@ -1,0 +1,459 @@
+// components/modals/AddModal.js
+
+import React, {
+  useState,
+  useEffect,
+} from "react";
+
+import {
+  Modal,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
+
+import { COLORS } from "../../styles/colors";
+import { SPACING } from "../../styles/spacing";
+import { TYPOGRAPHY } from "../../styles/typography";
+
+export default function AddModal({
+  visible,
+
+  title = "Create",
+
+  fields = [],
+
+  initialValues = {},
+
+  onSave,
+
+  onClose,
+}) {
+  const [form, setForm] =
+    useState({});
+
+  useEffect(() => {
+    setForm(initialValues);
+  }, [
+    visible,
+    initialValues,
+  ]);
+
+  const updateField = (
+    key,
+    value
+  ) => {
+    setForm((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  const toggleTag = (
+    key,
+    value
+  ) => {
+    const current =
+      form[key] || [];
+
+    if (
+      current.includes(value)
+    ) {
+      updateField(
+        key,
+        current.filter(
+          (item) =>
+            item !== value
+        )
+      );
+    } else {
+      updateField(key, [
+        ...current,
+        value,
+      ]);
+    }
+  };
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+    >
+      <View style={styles.overlay}>
+        <View
+          style={styles.container}
+        >
+          <Text
+            style={styles.title}
+          >
+            {title}
+          </Text>
+
+          <ScrollView>
+            {fields.map(
+              (field) => {
+                if (
+                  field.type ===
+                  "text"
+                ) {
+                  return (
+                    <View
+                      key={
+                        field.key
+                      }
+                    >
+                      <Text
+                        style={
+                          styles.label
+                        }
+                      >
+                        {
+                          field.label
+                        }
+                      </Text>
+
+                      <TextInput
+                        value={
+                          form[
+                            field
+                              .key
+                          ] || ""
+                        }
+                        onChangeText={(
+                          text
+                        ) =>
+                          updateField(
+                            field.key,
+                            text
+                          )
+                        }
+                        style={
+                          styles.input
+                        }
+                        placeholder={
+                          field.placeholder
+                        }
+                        placeholderTextColor={
+                          COLORS.secondaryText
+                        }
+                      />
+                    </View>
+                  );
+                }
+
+                if (
+                  field.type ===
+                  "multiSelect"
+                ) {
+                  return (
+                    <View
+                      key={
+                        field.key
+                      }
+                    >
+                      <Text
+                        style={
+                          styles.label
+                        }
+                      >
+                        {
+                          field.label
+                        }
+                      </Text>
+
+                      <View
+                        style={
+                          styles.tagContainer
+                        }
+                      >
+                        {field.options.map(
+                          (
+                            option
+                          ) => {
+                            const selected =
+                              (
+                                form[
+                                  field
+                                    .key
+                                ] ||
+                                []
+                              ).includes(
+                                option
+                              );
+
+                            return (
+                              <TouchableOpacity
+                                key={
+                                  option
+                                }
+                                style={[
+                                  styles.tag,
+                                  selected &&
+                                    styles.selectedTag,
+                                ]}
+                                onPress={() =>
+                                  toggleTag(
+                                    field.key,
+                                    option
+                                  )
+                                }
+                              >
+                                <Text
+                                  style={
+                                    styles.tagText
+                                  }
+                                >
+                                  {
+                                    option
+                                  }
+                                </Text>
+                              </TouchableOpacity>
+                            );
+                          }
+                        )}
+                      </View>
+                    </View>
+                  );
+                }
+
+                if (
+                  field.type ===
+                  "singleSelect"
+                ) {
+                  return (
+                    <View
+                      key={
+                        field.key
+                      }
+                    >
+                      <Text
+                        style={
+                          styles.label
+                        }
+                      >
+                        {
+                          field.label
+                        }
+                      </Text>
+
+                      <View
+                        style={
+                          styles.tagContainer
+                        }
+                      >
+                        {field.options.map(
+                          (
+                            option
+                          ) => {
+                            const selected =
+                              form[
+                                field
+                                  .key
+                              ] ===
+                              option;
+
+                            return (
+                              <TouchableOpacity
+                                key={
+                                  option
+                                }
+                                style={[
+                                  styles.tag,
+                                  selected &&
+                                    styles.selectedTag,
+                                ]}
+                                onPress={() =>
+                                  updateField(
+                                    field.key,
+                                    option
+                                  )
+                                }
+                              >
+                                <Text
+                                  style={
+                                    styles.tagText
+                                  }
+                                >
+                                  {
+                                    option
+                                  }
+                                </Text>
+                              </TouchableOpacity>
+                            );
+                          }
+                        )}
+                      </View>
+                    </View>
+                  );
+                }
+
+                return null;
+              }
+            )}
+          </ScrollView>
+
+          <View
+            style={styles.footer}
+          >
+            <TouchableOpacity
+              style={
+                styles.cancelButton
+              }
+              onPress={onClose}
+            >
+              <Text
+                style={
+                  styles.cancelText
+                }
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={
+                styles.saveButton
+              }
+              onPress={() =>
+                onSave(form)
+              }
+            >
+              <Text
+                style={
+                  styles.saveText
+                }
+              >
+                Save
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const styles =
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+
+      backgroundColor:
+        "rgba(0,0,0,0.8)",
+
+      justifyContent:
+        "flex-end",
+    },
+
+    container: {
+      backgroundColor:
+        COLORS.background,
+
+      borderTopLeftRadius: 24,
+
+      borderTopRightRadius: 24,
+
+      padding: SPACING.lg,
+
+      maxHeight: "85%",
+    },
+
+    title: {
+      color: COLORS.white,
+
+      fontSize:
+        TYPOGRAPHY.h2,
+
+      fontWeight: "700",
+
+      marginBottom: 20,
+    },
+
+    label: {
+      color: COLORS.white,
+
+      marginBottom: 8,
+
+      marginTop: 12,
+    },
+
+    input: {
+      backgroundColor:
+        COLORS.cardBackground,
+
+      color: COLORS.white,
+
+      borderRadius: 12,
+
+      padding: 12,
+    },
+
+    tagContainer: {
+      flexDirection: "row",
+
+      flexWrap: "wrap",
+    },
+
+    tag: {
+      backgroundColor:
+        COLORS.cardBackground,
+
+      borderRadius: 12,
+
+      paddingHorizontal: 12,
+
+      paddingVertical: 8,
+
+      marginRight: 8,
+
+      marginBottom: 8,
+    },
+
+    selectedTag: {
+      backgroundColor:
+        COLORS.lightBlue,
+    },
+
+    tagText: {
+      color: COLORS.white,
+    },
+
+    footer: {
+      flexDirection: "row",
+
+      justifyContent:
+        "flex-end",
+
+      marginTop: 20,
+    },
+
+    cancelButton: {
+      marginRight: 12,
+    },
+
+    cancelText: {
+      color:
+        COLORS.secondaryText,
+    },
+
+    saveButton: {
+      backgroundColor:
+        COLORS.lightBlue,
+
+      borderRadius: 12,
+
+      paddingHorizontal: 18,
+
+      paddingVertical: 10,
+    },
+
+    saveText: {
+      color: COLORS.white,
+
+      fontWeight: "700",
+    },
+  });
